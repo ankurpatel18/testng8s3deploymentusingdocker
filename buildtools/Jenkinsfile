@@ -4,7 +4,6 @@ node{
             stage ('Preparation'){
                 try{
                     git 'https://gitlab.com/theoankur/testng8s3deploymentartifacts.git'
-                    // checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanBeforeCheckout'], [$class: 'PerBuildTag']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://gitlab.com/theoankur/testng8s3deploymentartifacts.git']]])
                 }catch(err){
                     sh 'echo "error occured in build"'
                     throw err;
@@ -33,9 +32,8 @@ node{
                     }
                 }
                 stage('Deployment'){
-                    withAWS(credentials: 'awsS3acesssForJenkins', region: 'ap-south-1') {
-                        s3Upload acl: 'Private', bucket: 'jenkins-deployment-artifacts-2019', file: "${JOB_NAME}_${BUILD_NUMBER}.zip", path: 'testNg8Deployment/'
-                        // s3CopyArtifact buildSelector: lastSuccessful(stable: true), filter: 'testNg8Deployment.zip', flatten: false, optional: false, projectName: 'testNg8Deployment', target: 'testNg8Deployment/'
+                    withAWS(credentials: 'awsS3acesss') {
+                        s3Upload acl: 'Private', bucket: 'theorem-jenkins-artifacts', file: "${JOB_NAME}_${BUILD_NUMBER}.zip", path: 'testNg8Deployment/'
                     }
                 }
             }
