@@ -3,7 +3,8 @@ node{
         dir("${WORKSPACE}"){
             stage ('Preparation'){
                 try{
-                    git 'https://gitlab.com/theoankur/testng8s3deploymentartifacts.git'
+                    git credentialsId: 'gitlabuser-theoankur', url: 'git@gitlab.com:theoankur/testng8s3deploymentartifacts.git'
+                    
                 }catch(err){
                     sh 'echo "error occured in build"'
                     throw err;
