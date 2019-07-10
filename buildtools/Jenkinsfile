@@ -25,14 +25,14 @@ node{
                     zip archive: false, dir: 'testNg8Deployment', glob: '', zipFile: "${JOB_NAME}_${BUILD_NUMBER}.zip"
                     archiveArtifacts artifacts: "${JOB_NAME}_${BUILD_NUMBER}.zip", fingerprint: true
                 }
-                stage('Approval to Deploy'){
+                stage('Approval to Deploy to AWS S3'){
                     script {
                         timeout(time: 2, unit: 'MINUTES') {
                             input(id: "Deployment Approval", message: "Are you approving deploy of ${JOB_NAME} with ${BUILD_NUMBER}?", ok: 'Deployment')
                         }
                     }
                 }
-                stage('Deployment'){
+                stage('Deployment to AWS S3'){
                     withAWS(credentials: 'awsS3acesss') {
                         s3Upload acl: 'Private', bucket: 'theorem-jenkins-artifacts', file: "${JOB_NAME}_${BUILD_NUMBER}.zip", path: 'testNg8Deployment/'
                     }
