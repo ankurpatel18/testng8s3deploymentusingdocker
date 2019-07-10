@@ -27,7 +27,7 @@ node{
                 stage('Approval to Deploy'){
                     script {
                         timeout(time: 2, unit: 'MINUTES') {
-                            input(id: "Deployment Approval", message: "Are you approving deploy of ${JOB_NAME}_${BUILD_NUMBER}?", ok: 'Deployment')
+                            input(id: "Deployment Approval", message: "Are you approving deploy of ${JOB_NAME} with ${BUILD_NUMBER}?", ok: 'Deployment')
                         }
                     }
                 }
