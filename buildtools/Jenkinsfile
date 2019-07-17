@@ -3,40 +3,21 @@ node{
         dir("${WORKSPACE}"){
             stage ('Preparation'){
                 try{
-                    git credentialsId: 'gitlabuser-theoankur', url: 'git@gitlab.com:theoankur/testng8s3deploymentartifacts.git'
-                    
+                    git 'https://github.com/ankurpatel18/testng8s3deploymentusingdocker.git'
+
                 }catch(err){
                     sh 'echo "error occured in build"'
                     throw err;
                 }
             }
-            
-            nodejs('NodeJS') {
-                stage ('Install dependencies') {
-                    sh 'npm install'
-                }
 
-                stage ('Build'){
-                    sh 'npm run build'
-                }
-            }
-            dir('dist/'){
-                 stage ('Generate Artifact') {
-                    zip archive: false, dir: 'testNg8Deployment', glob: '', zipFile: "${JOB_NAME}_${BUILD_NUMBER}.zip"
-                    archiveArtifacts artifacts: "${JOB_NAME}_${BUILD_NUMBER}.zip", fingerprint: true
-                }
-                stage('Approval to Deploy to AWS S3'){
-                    script {
-                        timeout(time: 2, unit: 'MINUTES') {
-                            input(id: "Deployment Approval", message: "Are you approving deploy of ${JOB_NAME} with ${BUILD_NUMBER}?", ok: 'Deployment')
-                        }
-                    }
-                }
-                stage('Deployment'){
-                    withAWS(credentials: 'awsS3acesss', region: 'us-east-1') {
-                        s3Upload acl: 'Private', bucket: 'theorem-jenkins-artifacts', file: "${JOB_NAME}_${BUILD_NUMBER}.zip", path: 'testNg8Deployment/'
-                    }
-                }
+            stage ('Build docker container'){
+                sh label: 'docker container', script: '''ls
+                    docker info
+                    docker build -t ankurpatel18/testNg8DeploymentUsingDocker:${BUILD_NUMBER} .
+                    docker tag ankurpatel18/testNg8DeploymentUsingDocker:${BUILD_NUMBER} ankurpatel18/testNg8DeploymentUsingDocker:latest
+                    docker images
+                    '''
             }
         }
     }
